@@ -2,10 +2,12 @@
 //
 #include <iostream>
 #include <omp.h>
+#include <cstdlib> // Librería para funciones de creación de números aleatorios
+#include <ctime> // Librería para funciones de tiempo
 
-#define N 1000
-#define chunk 100
-#define mostrar 10
+#define N 1000 // Cantidad de elementos a manejar en los arreglos 
+#define chunk 100 // Tamaño de cada pedazo de trabajo
+#define mostrar 10 // Cantidad de elementos a imprimir
 
 void imprimeArreglo(float* d);
 
@@ -15,16 +17,20 @@ int main()
     float a[N], b[N], c[N];
     int i;
 
+	srand(time(NULL)); // Semilla para generar números aleatorios
+
     // Inicialización de datos
+
     for (i = 0; i < N; i++)
     {
-        a[i] = i * 10.0f;
-        b[i] = (i + 3) * 3.7f;
+		a[i] = rand() % 100; // Números aleatorios entre 0 y 99
+		b[i] = rand() % 100;
     }
 
     int pedazos = chunk; 
 
-    // Paralelización con planificación estática (static scheduling)
+	// Número de pedazos de trabajo para cada hilo
+
     #pragma omp parallel for \
     shared(a, b, c, pedazos) private(i) \
     schedule(static, pedazos)
@@ -33,10 +39,12 @@ int main()
         c[i] = a[i] + b[i];
 
     // Resultados
+
     std::cout << "Imprimiendo los primeros " << mostrar << " valores del arreglo a: " << std::endl; imprimeArreglo(a);
     std::cout << "Imprimiendo los primeros " << mostrar << " valores del arreglo b: " << std::endl; imprimeArreglo(b);
     std::cout << "Imprimiendo los primeros " << mostrar << " valores del arreglo c: " << std::endl; imprimeArreglo(c);
 
+	return 0; // Se indica que el programa terminó correctamente
 }
 
 void imprimeArreglo(float* d)
